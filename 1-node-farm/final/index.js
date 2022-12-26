@@ -4,6 +4,7 @@ const http = require('http');
 const { url } = require('inspector');
 const URL = require('url');
 const replaceTemp = require('./modules/replaceTemplate');
+const slugify = require('slugify');
 
 //Global Vars
 const encoding = 'utf-8';
@@ -45,13 +46,18 @@ const tempCard = fs.readFileSync(`${__dirname}/templates/template-card.html`, en
 const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, encoding);
 const productData = JSON.parse(data);
 
+//use to replace the product id number with a tag at the end of the url 
+// i.e http://localhost:8000/product?id=0 -> http://localhost:8000/product/fresh-avacados
+const slugs = productData.map(el => slugify(el.productName, {lower: true}));
+
+console.log(slugs);
 
 const server = http.createServer((req, res) =>{
 
 const {query, pathname} = URL.parse(req.url, true);
 const pathName = req.url;
 
-
+ 
 //Overview Page
 if(pathname === '/' || pathname === '/overview'){
   res.writeHead(200, {'Content-type' : 'text/html'});
